@@ -2,8 +2,8 @@
 This project is a 'premium' challange (that I do not have access to) on frontendmentor. Not having the premium account means that I can not access image/design/notes files. So I am going to be following only their requirements for the app.
 
 ### LINK TO FIGMA DESIGN:
-![Design preview for TIC-TAC-TOE form coding challenge](./img/design-idea.jpg)
-https://www.frontendmentor.io/challenges/tic-tac-toe-game-Re7ZF_E2v
+[![Design preview for TIC-TAC-TOE form coding challenge](./img/design-idea.jpg)]
+(https://www.frontendmentor.io/challenges/tic-tac-toe-game-Re7ZF_E2v)
 
 ### REQUIREMENTS:
 #### USERS SHOULD BE ABLE TO:
