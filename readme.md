@@ -12,4 +12,5 @@ This project is a 'premium' challange (that I do not have access to) on frontend
 - **Bonus 1:** Save the game state in the browser so that it’s preserved if the player refreshes their browser
 - **Bonus 2:** Instead of having the computer randomly make their moves, try making it clever so it’s proactive in blocking your moves and trying to win
 
-#### PERSONAL GAOLS:
+#### SOLUTIONS: 
+- For game logic I am going to be using something called "magic square": https://mathworld.wolfram.com/MagicSquare.html

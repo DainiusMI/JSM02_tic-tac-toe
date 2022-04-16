@@ -4,9 +4,50 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/home.css">
     <title>TIC-TAC-TOE</title>
 </head>
 <body>
-    
+    <div class="app-container">
+        <div class="header">
+            <div class="shapes-container">
+                <div class="x-shape fa-solid fa-xmark"></div>
+                <div class="o-shape fa-solid fa-o"></div>
+            </div>
+            <div class="turn">
+                <div class="turn-icon fa-solid fa-xmark"></div>
+                <p>TURN</p>
+            </div>
+            <div class="reset">
+                <div class="reset-icon fa-solid fa-arrow-rotate-right"></div>
+            </div>
+        </div>
+        <div id="field-grid" class="game-area">
+            <button value="8" class="field"></button>
+            <button value="1" class="field"></button>
+            <button value="6" class="field"></button>
+            <button value="3" class="field"></button>
+            <button value="5" class="field"></button>
+            <button value="7" class="field"></button>
+            <button value="4" class="field"></button>
+            <button value="9" class="field"></button>
+            <button value="2" class="field"></button>
+        </div>
+        <div class="footer">
+            <div class="x-score">
+                <p>X (YOU)</p>
+                <h5>14</h5>
+            </div>
+            <div class="tie">
+                <p>TIES</p>
+                <h5>32</h5>
+            </div>
+            <div class="o-score">
+                <p>O (CPU)</p>
+                <h5>11</h5>
+            </div>
+        </div>
+    </div>
+    <script src="./index.js"></script>
 </body>
 </html>

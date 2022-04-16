@@ -1,0 +1,151 @@
+$iconX: #31C6C2;
+$iconO: #F4B033;
+$accent-color: #A8BEC9;
+$bg-color:#192A32;
+$field-color:#1F3540;
+
+
+@import url(../css/all.css);
+
+
+@mixin flexCol ($align, $justify){
+    display: flex;
+    flex-direction: column;
+    align-items: $align;
+    justify-content: $justify;
+}
+@mixin flexRow ($align, $justify){
+    display: flex;
+    flex-direction: row;
+    align-items: $align;
+    justify-content: $justify;
+}
+
+
+body {
+    font-size: 16px;
+    @include flexCol(center, center);
+    width: 100%;
+    background-color: $bg-color;
+}
+.app-container {
+    @include flexCol(center, center);
+    gap: 1rem;
+}
+.header {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    .shapes-container {
+        @include flexRow(center, flex-start);
+        gap: .5rem;
+        height: 3rem;
+        .x-shape {
+            font-size: 2.8rem;
+            color: $iconX;
+            line-height: 2.8rem;
+        }
+        .o-shape {
+            font-size: 2.3rem;
+            color: $iconO;
+            line-height: 2.3rem;
+        }
+
+    }
+    .turn {
+        @include flexRow(center, center);
+        gap: .5rem;
+
+        background-color: $field-color;
+        color: $accent-color;
+        height: 2.8rem;
+    
+        border-radius: .5rem;
+        box-shadow: 0px 2px 5px black;
+        cursor: default;
+        .turn-icon {
+            font-size: 1.5rem
+        }
+    }
+    .reset {
+        @include flexRow(center, flex-end);
+        .reset-icon {
+            cursor: pointer;
+            background-color: $accent-color;
+            padding: .5rem;
+            border-radius: .5rem;
+            height: 1.5rem;
+            aspect-ratio: 1/1;
+            line-height: 1.5rem;
+            font-size: 1rem;
+            color: $bg-color;
+            text-align: center;
+        }
+    }
+}
+
+.game-area {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    .field {
+        cursor: pointer;
+        width: 7rem;
+        aspect-ratio: 1 / 1;
+        background-color: $field-color;
+        border-radius: 1rem;
+        box-shadow: 0px 2px 5px black;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+
+    }
+    .fa-xmark {
+        font-size: 5rem;
+        color: $iconX;
+    }
+    .fa-o {
+        font-size: 4.5rem;
+        color: $iconO;
+    }
+}
+.footer {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    cursor: default;
+    * {
+
+        margin: 0;
+        border-radius: .5rem;
+        color: $bg-color;
+
+    }
+
+    .x-score {
+        @include flexCol(center, center);
+        padding: .5rem 0;
+        background-color: $iconX;
+    }
+    .tie {
+        @include flexCol(center, center);
+        padding: .5rem 0;
+        background-color: $accent-color
+    }
+    .o-score {
+        @include flexCol(center, center);
+        padding: .5rem 0;
+        background-color: $iconO;
+    }
+
+    p {
+        font-size: .8rem;
+        font-weight: 500;
+    }
+    h5 {
+        font-size: 1.2rem;
+        font-weight: 900;
+    }
+}
