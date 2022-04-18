@@ -85,7 +85,7 @@ function minimax(boardMap, depth, isMaximizing){
         for (let y = 0; y < 3; y++){ 
             for (let x = 0; x < 3; x++){
                 if (availableValues.includes(mainValueMap[x][y])){
-                    pcMap[x][y] = availableValues.includes(mainValueMap[x][y]);
+                    pcMap[x][y] = mainValueMap[x][y];
                     let score = minimax(pcMap, depth + 1, false);
                     pcMap[x][y] = 0;
                     bestScore = max(bestScore, score);
@@ -100,7 +100,7 @@ function minimax(boardMap, depth, isMaximizing){
         for (let y = 0; y < 3; y++){ 
             for (let x = 0; x < 3; x++){
                 if (availableValues.includes(mainValueMap[x][y])){
-                    playerMap[x][y] = availableValues.includes(mainValueMap[x][y]);
+                    playerMap[x][y] = mainValueMap[x][y];
                     let score = minimax(playerMap, depth + 1, true);
                     playerMap[x][y] = 0;
                     bestScore = min(bestScore, score);
