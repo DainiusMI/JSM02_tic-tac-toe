@@ -19,19 +19,9 @@ const mainValueMap=[
     [3, 5, 7],
     [4, 9, 2]
 ];
-const shadowValueMap=[
-    [8, 1, 6],
-    [3, 5, 7],
-    [4, 9, 2]
-];
 
 // matrix to log player choice
 let playerMap=[  
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
-];
-const userMinimaxMap=[  
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0]
@@ -42,19 +32,6 @@ let pcMap=[
     [0, 0, 0],
     [0, 0, 0]
 ];
-const pcMinimaxMap=[  
-    [0, 0, 0],
-    [0, 0, 0],
-    [0, 0, 0]
-];
-
-function asignMinimaxMap(boardMap, minimaxMap){
-    for (let y = 0; y < 3; y++){
-        for (let x = 0; x < 3; x++){
-            minimaxMap[x][y] = boardMap[x][y];
-        }
-    }
-}
 
 function pickBestMove() {
     let bestScore = -100;
@@ -69,11 +46,11 @@ function pickBestMove() {
                 if (score > bestScore){
                     bestScore = score;
                     bestMove = {x, y};
+                    console.log('best move is: ' + bestMove.x + ' ' + bestMove.y);
                 }
             }
         }
     }
-    pcMap[bestMove.x][bestMove.y] = mainValueMap[bestMove.x][bestMove.y];
     console.log('pc selected: ' + pcMap[bestMove.x][bestMove.y]);
     // draws pc move
     let pcMove = pcMap[bestMove.x][bestMove.y];
@@ -89,13 +66,15 @@ function pickBestMove() {
     whosTurnIsIt(currentPlayer);
 }
 function minimax(boardMap, depth, isMaximizing){
-    // let shadowCopy = pcMap.slice();
-    // let results = checkScore(pcMap);
+ 
+  // let results = checkScore(pcMap);
     if (checkScore(pcMap) !== null){
         return checkScore(pcMap);
     }
+
+
     if (isMaximizing){
-        let bestScore = -Infinity;
+        let bestScore = -100;
         for (let y = 0; y < mainValueMap.length; y++){ 
             for (let x = 0; x < mainValueMap.length; x++){
                 if (availableValues.includes(mainValueMap[x][y])){
@@ -109,7 +88,7 @@ function minimax(boardMap, depth, isMaximizing){
         return bestScore;
     }
     else {
-        let bestScore = Infinity;
+        let bestScore = 100;
         for (let y = 0; y < mainValueMap.length; y++){ 
             for (let x = 0; x < mainValueMap.length; x++){
                 if (availableValues.includes(mainValueMap[x][y])){
@@ -129,53 +108,6 @@ function minimax(boardMap, depth, isMaximizing){
 function whosTurnIsIt(currentPlayer){
     console.log(`it is players ${currentPlayer} turn`)
 }
-
-
-let scores = {
-    X: 10,
-    O: -10,
-    tie: 0
-  };
-
-
-
-
-function checkScore(boardMap) {
-    let winner = null;
-
-    let rowSum = boardMap.map(r => r.reduce( (a, b) => a + b ));
-    let colSum = boardMap.reduce((a, b) => a.map((x, i) => x + b[i]));
-   
-    let diagSum0 = 0;
-    let diagSum3 = 0;
-    // diagonal sum
-    for (let i = 0; i < 3; i++){
-        diagSum0 += boardMap[i][i];
-        diagSum3 += boardMap[i][2-i];
-    }
-
-    if (rowSum.includes(15) || colSum.includes(15) || diagSum0 === 15 || diagSum3 === 15) {
-        if (currentPlayer = playerPC){
-            score = 10;
-            winner = currentPlayer;
-            console.log(`player ${winner} has won!!!`);
-            return score;
-        }
-        else if (currentPlayer = playerHU){
-            score = -10;
-            winner = currentPlayer;
-            console.log(`player ${winner} has won!!!`);
-            return score;
-        }
-    }
-    else if (winner == null && availableValues.length == 0){
-        score = 0;
-        console.log('it a tie');
-        return score;
-    }
-}
-
-
 
 
 function updateMap(boardMap, value) {
@@ -206,7 +138,6 @@ var playerPickedValue;
 const fieldGrid = document.querySelectorAll('.field');
 fieldGrid.forEach(function (i) {
     i.addEventListener('click', function (){
-        
         currentPlayer = startingPlayer;
         if (currentPlayer == playerHU){
             if (this.classList.contains(fieldTaken) === false) {
@@ -215,10 +146,9 @@ fieldGrid.forEach(function (i) {
                 playerPickedValue = this.value;
 
                 updateMap(playerMap, playerPickedValue);
-                console.log(playerMap);
-                console.log(mainValueMap);
-                checkScore(playerMap);
-                
+                checkScore();
+                console.log('player matrix' + playerMap);
+                console.log('pc matrix: ' + pcMap);
 
                 currentPlayer = playerPC;
                 whosTurnIsIt(currentPlayer);
@@ -232,4 +162,44 @@ function whosTurnIsIt(currentPlayer){
 }
 
 
+
+
+function checkScore(){
+    let winner = null;
+
+    let rowSumHU = playerMap.map(r => r.reduce( (a, b) => a + b ));
+    let colSumHU = playerMap.reduce((a, b) => a.map((x, i) => x + b[i]));
+    let rowSumPC = pcMap.map(r => r.reduce( (a, b) => a + b ));
+    let colSumPC = pcMap.reduce((a, b) => a.map((x, i) => x + b[i]));
+   
+    let diagSum0HU = 0;
+    let diagSum3HU = 0;
+    let diagSum0PC = 0;
+    let diagSum3PC = 0;
+
+    for (let i = 0; i < 3; i++){
+        diagSum0HU += playerMap[i][i];
+        diagSum3HU += playerMap[i][2-i];
+    }
+    for (let i = 0; i < 3; i++){
+        diagSum0PC += pcMap[i][i];
+        diagSum3PC += pcMap[i][2-i];
+    }
+
+
+    if (rowSumHU.includes(15) || colSumHU.includes(15) || diagSum0HU === 15 || diagSum3HU === 15) {
+        winner = playerHU;
+        return -10;
+    }
+    if (rowSumPC.includes(15) || colSumPC.includes(15) || diagSum0PC === 15 || diagSum3PC === 15) {
+        winner = playerPC;
+        return 10;
+    }
+    else if (winner == null && availableValues.length == 0){
+        winner = 'tie';
+        return 0;
+    }
+}
+
 pickBestMove();
+console.log(pcMap);
