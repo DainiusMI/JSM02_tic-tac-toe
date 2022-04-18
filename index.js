@@ -3,7 +3,6 @@ const fieldTaken = 'fa-solid'; // instead of a booleon I will check for a class 
 const drawX = 'fa-xmark';   // class name that draws 'x'
 const drawO = 'fa-o';       // class name that draws 'o'
 
-
 let playerPC = 'X';
 let playerHU = 'O';
 
@@ -36,7 +35,6 @@ let pcMap=[
 function pickBestMove() {
     let bestScore = -100;
     let bestMove;
-   // let pcMap = pcMap.slice();
     for (let y = 0; y < 3; y++){
         for (let x = 0; x < 3; x++){
             if (availableValues.includes(mainValueMap[x][y])){
@@ -71,8 +69,8 @@ function pickBestMove() {
 }
 function minimax(boardMap, depth, isMaximizing){
  
-  // let results = checkScore(pcMap);
-    if (checkScore() != null || mainValueMap.length != 0){
+
+    if (checkScore() != null || availableValues.length != 0){
         if (winner = playerHU){
             return 100 - depth;
         }
@@ -88,7 +86,8 @@ function minimax(boardMap, depth, isMaximizing){
             for (let x = 0; x < 3; x++){
                 if (availableValues.includes(mainValueMap[x][y])){
                     pcMap[x][y] = availableValues.includes(mainValueMap[x][y]);
-                    let score = minimax(mainValueMap, depth + 1, false);
+                    let score = minimax(pcMap, depth + 1, false);
+                    pcMap[x][y] = 0;
                     bestScore = max(bestScore, score);
                     console.log('best score is: ' + bestScore);
                 }
@@ -102,7 +101,8 @@ function minimax(boardMap, depth, isMaximizing){
             for (let x = 0; x < 3; x++){
                 if (availableValues.includes(mainValueMap[x][y])){
                     playerMap[x][y] = availableValues.includes(mainValueMap[x][y]);
-                    let score = minimax(mainValueMap, depth + 1, true);
+                    let score = minimax(playerMap, depth + 1, true);
+                    playerMap[x][y] = 0;
                     bestScore = min(bestScore, score);
                     console.log('best score is: ' + bestScore);
                 }
