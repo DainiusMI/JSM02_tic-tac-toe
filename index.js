@@ -3,133 +3,233 @@ const fieldTaken = 'fa-solid'; // instead of a booleon I will check for a class 
 const drawX = 'fa-xmark';   // class name that draws 'x'
 const drawO = 'fa-o';       // class name that draws 'o'
 
-let won = false;     // has the gae been won
 
-// matrix containing 'magic square' values 
-const fieldMatrix=[
+let playerPC = 'X';
+let playerHU = 'O';
+
+let startingPlayer = playerHU;
+let currentPlayer;
+
+// array holding still available values
+let availableValues = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+// matrix containing 'magic square' values for the game
+const mainValueMap=[
     [8, 1, 6],
     [3, 5, 7],
     [4, 9, 2]
 ];
-// matrix to log player selection
-const userMatrix=[  
+const shadowValueMap=[
+    [8, 1, 6],
+    [3, 5, 7],
+    [4, 9, 2]
+];
+
+// matrix to log player choice
+let playerMap=[  
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0]
 ];
-const pcOptionMatrix=[
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 9]
-]
-const pcChoiceMatrix=[  
+const userMinimaxMap=[  
     [0, 0, 0],
     [0, 0, 0],
     [0, 0, 0]
 ];
-// array of already used indexes
-let movesLog = new Map();
-console.log(movesLog);
+// matrix to log PC choice
+let pcMap=[  
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+];
+const pcMinimaxMap=[  
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+];
 
-// minimax algorithm
-function evaluateScore(string){
-    // putting used indexes into a string
-    let value = movesLog.get(string);
-    // checking if the created string is not empty
-    if (value === undefined) {
-
-        // testing if you have won bellow
-
-        // splitting the argument string into seperate values and putting it in array
-        let movesArray = string.split("").map(function(x) {return parseInt(x, 10);});
-        // setting value to: 15 - last move value
-        let compareResult = 15 - movesArray[string.length - 1];
-        
-        // Conditional (ternary) operator: 'condition ? true : false' ;
-        // in this case we check if string length has a remainder
-        // and asign 1 if it hasn't
-        for (let i = (string.length % 2 == 0 ? 1 : 0); i < string.length - 4; i += 2) {
-            for (let j = i + 2; j < string.length - 2; j += 2) {
-                if (movesArray[i] + movesArray[j] == compareResult) {
-                movesLog.set(string, 10 - string.length);
-                return (10 - string.length);
-                }
-            }
+function asignMinimaxMap(boardMap, minimaxMap){
+    for (let y = 0; y < 3; y++){
+        for (let x = 0; x < 3; x++){
+            minimaxMap[x][y] = boardMap[x][y];
         }
-        // function argument has reached 9 characters "it's a draw"
-        if (string.length == 9) {
-            movesLog.set(string, 0);
-            return 0;
-        }
-        // min of negative possible next results otherwise
-        value = 10;
-        for (let i = 1; i < 10; i++) {
-            let newChar = i.toString();
-            if (!string.includes(newChar)) {
-                let curr = -evaluateString(string + newChar);
-                if (curr < value)
-                value = curr;
-            }
-        }
-        evaluations.set(string, value);
     }
-    return value;
 }
 
-
-
-
-
-
-const fieldGrid = document.querySelectorAll('.field');
-fieldGrid.forEach(function (i) {
-    i.addEventListener('click', function (){
-
-        if (this.classList.contains(fieldTaken) === false) {
-            this.classList.add(fieldTaken);
-            this.classList.add(drawO);
-            let fieldValue = JSON.parse(this.value);
+function pickBestMove() {
+    let bestScore = -100;
+    let bestMove;
+    let shadowCopy = pcMap.slice();
+    for (let y = 0; y < 3; y++){
+        for (let x = 0; x < 3; x++){
         
-
-            // since other solutions of finding index did not work using a for loop
-            for (let y = 0; y < fieldMatrix.length; y++){ 
-                for (let x = 0; x < fieldMatrix.length; x++){
-                    if (fieldMatrix[x][y] === fieldValue){
-                        userMatrix[x][y] = fieldValue;
-                        pcOptionMatrix[x][y] = 0;
-                    }
+            if (availableValues.includes(mainValueMap[x][y])){
+                shadowCopy[x][y] =  mainValueMap[x][y];
+                let score = minimax(mainValueMap, 0, false);
+                if (score > bestScore){
+                    bestScore = score;
+                    bestMove = {x, y};
                 }
             }
-            // run pc move
-            pcTurn();
-          
-
         }
-        checkScore(userMatrix);
+    }
+    pcMap[bestMove.x][bestMove.y] = mainValueMap[bestMove.x][bestMove.y];
+    console.log('pc selected: ' + pcMap[bestMove.x][bestMove.y]);
+    // draws pc move
+    let pcMove = pcMap[bestMove.x][bestMove.y];
+    fieldGrid.forEach(function (i) {
+        if (i.value == pcMove){
+            i.classList.add(fieldTaken);
+            i.classList.add(drawX);
+        }
     })
-})
-
-function pcTurn() {
-
-    for (let x = 0; x < userMatrix.length; x++){
-        if (userMatrix[x][x] == 0) {
-            pcChoiceMatrix[x][x] == fieldMatrix[x][x];
-
-        }
+    // edits availabe values array and pcMap matrix
+    updateMap(pcMap, pcMove);
+    currentPlayer = playerHU;
+    whosTurnIsIt(currentPlayer);
+}
+function minimax(boardMap, depth, isMaximizing){
+    // let shadowCopy = pcMap.slice();
+    // let results = checkScore(pcMap);
+    if (checkScore(pcMap) !== null){
+        return checkScore(pcMap);
     }
+    if (isMaximizing){
+        let bestScore = -Infinity;
+        for (let y = 0; y < mainValueMap.length; y++){ 
+            for (let x = 0; x < mainValueMap.length; x++){
+                if (availableValues.includes(mainValueMap[x][y])){
+                    shadowCopy[x][y] =  mainValueMap[x][y];
+                    let score = minimax(boardMap, depth + 1, false);
+                    bestScore = max(bestScore, score);
+                }
+            }
+        }
+        console.log('best score is: ' + bestScore);
+        return bestScore;
+    }
+    else {
+        let bestScore = Infinity;
+        for (let y = 0; y < mainValueMap.length; y++){ 
+            for (let x = 0; x < mainValueMap.length; x++){
+                if (availableValues.includes(mainValueMap[x][y])){
+                    shadowCopy[x][y] =  mainValueMap[x][y];
+                    let score = minimax(boardMap, depth + 1, true);
+                    bestScore = min(bestScore, score);
+                }
+            }
+        }
+        console.log('best score is: ' + bestScore);
+        return bestScore;
+    }
+    
 }
 
-function checkScore(mtx) {
-    let rowSum = mtx.map(r => r.reduce( (a, b) => a + b ));
-    let colSum = mtx.reduce((a, b) => a.map((x, i) => x + b[i]));
+
+function whosTurnIsIt(currentPlayer){
+    console.log(`it is players ${currentPlayer} turn`)
+}
+
+
+let scores = {
+    X: 10,
+    O: -10,
+    tie: 0
+  };
+
+
+
+
+function checkScore(boardMap) {
+    let winner = null;
+
+    let rowSum = boardMap.map(r => r.reduce( (a, b) => a + b ));
+    let colSum = boardMap.reduce((a, b) => a.map((x, i) => x + b[i]));
+   
     let diagSum0 = 0;
     let diagSum3 = 0;
     // diagonal sum
-    for (let i = 0; i < mtx.length; i++){
-        diagSum0 += mtx[i][i];
-        diagSum3 += mtx[i][mtx.length-i-1];
+    for (let i = 0; i < 3; i++){
+        diagSum0 += boardMap[i][i];
+        diagSum3 += boardMap[i][2-i];
     }
+
     if (rowSum.includes(15) || colSum.includes(15) || diagSum0 === 15 || diagSum3 === 15) {
-        won = true;
+        if (currentPlayer = playerPC){
+            score = 10;
+            winner = currentPlayer;
+            console.log(`player ${winner} has won!!!`);
+            return score;
+        }
+        else if (currentPlayer = playerHU){
+            score = -10;
+            winner = currentPlayer;
+            console.log(`player ${winner} has won!!!`);
+            return score;
+        }
+    }
+    else if (winner == null && availableValues.length == 0){
+        score = 0;
+        console.log('it a tie');
+        return score;
     }
 }
+
+
+
+
+function updateMap(boardMap, value) {
+    
+    for (let y = 0; y < 3; y++){ 
+        for (let x = 0; x < 3; x++){
+            if (mainValueMap[x][y] == value){
+                // add field into his own matrix
+                boardMap[x][y] = value;
+                // marks field with his sign in main map
+                // mainValueMap[x][y] = currentPlayer;
+            }
+        }
+    }
+    
+    // getting rid off value that was picked form availabeValues array
+    for (let x = 0; x < availableValues.length; x++){
+        if (availableValues[x] == value ){
+            console.log('removing value: ' + availableValues[x]);
+            availableValues.splice(x, 1);
+        }
+    }
+    console.log('still available values: ' + availableValues);
+}
+
+
+var playerPickedValue;
+const fieldGrid = document.querySelectorAll('.field');
+fieldGrid.forEach(function (i) {
+    i.addEventListener('click', function (){
+        
+        currentPlayer = startingPlayer;
+        if (currentPlayer == playerHU){
+            if (this.classList.contains(fieldTaken) === false) {
+                this.classList.add(fieldTaken);
+                this.classList.add(drawO);
+                playerPickedValue = this.value;
+
+                updateMap(playerMap, playerPickedValue);
+                console.log(playerMap);
+                console.log(mainValueMap);
+                checkScore(playerMap);
+                
+
+                currentPlayer = playerPC;
+                whosTurnIsIt(currentPlayer);
+                pickBestMove();
+            }
+        }
+    })
+})
+function whosTurnIsIt(currentPlayer){
+    console.log(`it is players ${currentPlayer} turn`)
+}
+
+
+pickBestMove();
