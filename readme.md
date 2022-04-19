@@ -1,5 +1,5 @@
 #   ABANDONED
-After arround 20 hours of failing to grasp the concept of minimax I am turning my attention towards more praticle projects.
+After around 20 hours of failing to grasp the concept of minimax I am turning my attention towards more praticle projects.
 
 ## GAME OF 'TIC-TAC-TOE' 
 This project is a 'premium' challange (that I do not have access to) on frontendmentor. Not having the premium account means that I can not access image/design/notes files. So I am going to be following only their requirements for the app.
