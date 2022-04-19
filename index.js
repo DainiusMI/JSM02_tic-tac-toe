@@ -38,7 +38,7 @@ function pickBestMove() {
     for (let y = 0; y < 3; y++){
         for (let x = 0; x < 3; x++){
             if (availableValues.includes(mainValueMap[x][y])){
-                pcMap[x][y] =  mainValueMap[x][y];     // this is why my array gets full instantly
+                pcMap[x][y] =  mainValueMap[x][y];   
                 let score = minimax(mainValueMap, 0, false);
                 pcMap[x][y] = 0;
                 if (score > bestScore){
@@ -68,7 +68,6 @@ function pickBestMove() {
     whosTurnIsIt(currentPlayer);
 }
 function minimax(boardMap, depth, isMaximizing){
- 
 
     if (checkScore() != null || availableValues.length != 0){
         if (winner = playerHU){
@@ -81,12 +80,12 @@ function minimax(boardMap, depth, isMaximizing){
     }
 
     if (isMaximizing){
-        let bestScore = -100;
+        let bestScore = -Infinity;
         for (let y = 0; y < 3; y++){ 
             for (let x = 0; x < 3; x++){
                 if (availableValues.includes(mainValueMap[x][y])){
                     pcMap[x][y] = mainValueMap[x][y];
-                    let score = minimax(pcMap, depth + 1, false);
+                    let score = minimax(boardMap, depth + 1, false);
                     pcMap[x][y] = 0;
                     bestScore = max(bestScore, score);
                     console.log('best score is: ' + bestScore);
@@ -96,12 +95,12 @@ function minimax(boardMap, depth, isMaximizing){
         return bestScore;
     }
     else {
-        let bestScore = 100;
+        let bestScore = Infinity;
         for (let y = 0; y < 3; y++){ 
             for (let x = 0; x < 3; x++){
                 if (availableValues.includes(mainValueMap[x][y])){
                     playerMap[x][y] = mainValueMap[x][y];
-                    let score = minimax(playerMap, depth + 1, true);
+                    let score = minimax(boardMap, depth + 1, true);
                     playerMap[x][y] = 0;
                     bestScore = min(bestScore, score);
                     console.log('best score is: ' + bestScore);
@@ -112,6 +111,8 @@ function minimax(boardMap, depth, isMaximizing){
     }
     
 }
+
+
 
 
 function whosTurnIsIt(currentPlayer){
@@ -167,9 +168,7 @@ function whosTurnIsIt(currentPlayer){
 }
 
 
-
-
-function checkScore(){
+function checkScore(boardName, playerName){
     let winner = null;
 
     let rowSumHU = playerMap.map(r => r.reduce( (a, b) => a + b ));
@@ -177,26 +176,25 @@ function checkScore(){
     let rowSumPC = pcMap.map(r => r.reduce( (a, b) => a + b ));
     let colSumPC = pcMap.reduce((a, b) => a.map((x, i) => x + b[i]));
    
-    let diagSum0HU = 0;
-    let diagSum3HU = 0;
-    let diagSum0PC = 0;
-    let diagSum3PC = 0;
+    let diagSumHU = [0, 0];
+    let diagSumPC = [0, 0];
+
 
     for (let i = 0; i < 3; i++){
-        diagSum0HU += playerMap[i][i];
-        diagSum3HU += playerMap[i][2-i];
+        diagSumHU[0] += playerMap[i][i];
+        diagSumHU[1] += playerMap[i][2-i];
     }
     for (let i = 0; i < 3; i++){
-        diagSum0PC += pcMap[i][i];
-        diagSum3PC += pcMap[i][2-i];
+        diagSumPC[0] += pcMap[i][i];
+        diagSumPC[1] += pcMap[i][2-i];
     }
 
 
-    if (rowSumHU.includes(15) || colSumHU.includes(15) || diagSum0HU === 15 || diagSum3HU === 15) {
+    if (rowSumHU.includes(15) || colSumHU.includes(15) || diagSumHU.includes(15)) {
         winner = playerHU;
         return -10;
     }
-    if (rowSumPC.includes(15) || colSumPC.includes(15) || diagSum0PC === 15 || diagSum3PC === 15) {
+    if (rowSumPC.includes(15) || colSumPC.includes(15) || diagSumPC.includes(15)) {
         winner = playerPC;
         return 10;
     }
@@ -205,6 +203,3 @@ function checkScore(){
         return 0;
     }
 }
-
-pickBestMove();
-console.log(pcMap);
